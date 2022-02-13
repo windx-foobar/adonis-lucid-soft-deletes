@@ -11,10 +11,11 @@ import test from 'japa'
 import { setup, cleanup, setupApplication, getBaseModel } from '../test-helpers'
 import { ModelQueryBuilder } from '@adonisjs/lucid/build/src/Orm/QueryBuilder'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
-import { column } from '@adonisjs/lucid/build/src/Orm/Decorators'
+import { column, beforeDelete, afterDelete } from '@adonisjs/lucid/build/src/Orm/Decorators'
 import { compose } from '@poppinss/utils/build/src/Helpers'
 import { LucidModel } from '@ioc:Adonis/Lucid/Orm'
 import { SoftDeletes } from '../src/SoftDeletes'
+import { beforeRestore, afterRestore } from '../src/Decorators'
 
 test.group('BaseModelWithSoftDeletes', (group) => {
   let app: ApplicationContract
@@ -265,5 +266,127 @@ test.group('BaseModelWithSoftDeletes', (group) => {
     }
 
     await User.truncate()
+  })
+
+  test('`delete, restore` check from instance register', async (assert) => {
+    const testContainer: string[] = []
+
+    const registerHooks = function (this: typeof BaseModel) {
+      this.before('delete', () => {
+        testContainer.push('boot.beforeDelete')
+      })
+
+      this.after('delete', () => {
+        testContainer.push('boot.afterDelete')
+      })
+
+      this.before('restore', () => {
+        testContainer.push('boot.beforeRestore')
+      })
+
+      this.after('restore', () => {
+        testContainer.push('boot.afterRestore')
+      })
+    }
+
+    class User extends compose(BaseModel, SoftDeletes) {
+      @column({ isPrimary: true })
+      public id: number
+
+      @column()
+      public username: string
+
+      @column()
+      public email: string
+
+      @column()
+      public isAdmin: number
+
+      @column()
+      public companyId: number
+    }
+
+    registerHooks.call(User)
+    User.boot()
+
+    const user = new User()
+    user.fill({ username: 'Tony', email: 'tony@test.ru', isAdmin: 1, companyId: 1 })
+    await user.save()
+
+    await user.delete()
+    await user.restore()
+
+    const jsonExpected = JSON.stringify([
+      'boot.beforeDelete',
+      'boot.afterDelete',
+      'boot.beforeRestore',
+      'boot.afterRestore',
+    ])
+    const jsonActual = JSON.stringify(testContainer)
+
+    assert.lengthOf(testContainer, 4)
+    assert.equal(jsonActual, jsonExpected)
+
+    await User.truncate()
+  })
+
+  test('`delete, restore` check from decorator register', async (assert) => {
+    const testContainer: string[] = []
+
+    class User extends compose(BaseModel, SoftDeletes) {
+      @column({ isPrimary: true })
+      public id: number
+
+      @column()
+      public username: string
+
+      @column()
+      public email: string
+
+      @column()
+      public isAdmin: number
+
+      @column()
+      public companyId: number
+
+      @beforeDelete()
+      public static beforeDelete () {
+        testContainer.push('boot.beforeDelete')
+      }
+
+      @afterDelete()
+      public static afterDelete () {
+        testContainer.push('boot.afterDelete')
+      }
+
+      @beforeRestore()
+      public static beforeRestore () {
+        testContainer.push('boot.beforeRestore')
+      }
+
+      @afterRestore()
+      public static afterRestore () {
+        testContainer.push('boot.afterRestore')
+      }
+    }
+    User.boot()
+
+    const user = new User()
+    user.fill({ username: 'Tony', email: 'tony@test.ru', isAdmin: 1, companyId: 1 })
+    await user.save()
+
+    await user.delete()
+    await user.restore()
+
+    const jsonExpected = JSON.stringify([
+      'boot.beforeDelete',
+      'boot.afterDelete',
+      'boot.beforeRestore',
+      'boot.afterRestore',
+    ])
+    const jsonActual = JSON.stringify(testContainer)
+
+    assert.lengthOf(testContainer, 4)
+    assert.equal(jsonActual, jsonExpected)
   })
 })
