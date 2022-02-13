@@ -132,6 +132,73 @@ export default class UsersController {
 }
 ```
 
+### Register your hooks handlers
+
+#### With decorators
+```ts
+import { compose } from '@ioc:Adonis/Core/Helpers'
+import { SoftDeletes } from '@ioc:Adonis/Addons/LucidSoftDeletes'
+import { beforeDelete, afterDelete, beforeRestore, afterRestore } from '@ioc:Adonis/Lucid/Orm';
+
+export default class User extends compose(BaseModel, SoftDeletes) {
+  // ...columns and props
+  
+  @beforeDelete()
+  public static beforeDelete() {
+     // ... do something
+  }
+
+  @afterDelete()
+  public static afterDelete() {
+    // ... do something
+  }
+
+  @beforeRestore()
+  public static beforeRestore() {
+    // ... do something
+  }
+
+  @afterRestore()
+  public static afterRestore() {
+    // ... do something
+  }
+}
+```
+
+#### With boot definition
+```ts
+import { compose } from '@ioc:Adonis/Core/Helpers'
+import { SoftDeletes } from '@ioc:Adonis/Addons/LucidSoftDeletes'
+
+export default class User extends compose(BaseModel, SoftDeletes) {
+  // ...columns and props
+  
+  public static boot() {
+    if (this.booted) {
+      return
+    }
+    
+    super.boot()
+    
+    this.before('delete', (model: User) => {
+      // ... do something
+    })
+
+    this.after('delete', (model: User) => {
+      // ... do something
+    })
+    
+    this.before('restore', (model: User) => {
+      // ... do something
+    })
+
+    this.after('restore', (model: User) => {
+      // ... do something
+    })
+  }
+}
+```
+
 ### Restoring Soft Deleted Models
 
 To restore a soft deleted model, you may call the `.restore()` method on a model instance.
