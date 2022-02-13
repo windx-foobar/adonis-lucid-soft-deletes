@@ -9,3 +9,4 @@
 
 /// <reference path="./mixin.ts" />
 /// <reference path="./querybuilder.ts" />
+/// <reference path="./orm.ts" />
