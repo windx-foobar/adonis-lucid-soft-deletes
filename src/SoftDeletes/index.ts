@@ -125,8 +125,15 @@ export function SoftDeletes<T extends NormalizeConstructor<LucidModel>> (supercl
       if (!this.trashed) {
         return this
       }
+
+      const Model = this.constructor as typeof ModelWithSoftDeletes
+
+      await Model.$hooks.exec('before', 'restore', this)
+
       this.deletedAt = null
       await this.save()
+
+      await Model.$hooks.exec('after', 'restore', this)
 
       return this
     }
