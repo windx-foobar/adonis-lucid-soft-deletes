@@ -9,13 +9,14 @@
     "build/src"
   ],
   "scripts": {
-    "lint": "eslint . --ext=.ts",
+    "lint": "eslint . --ext=.ts,.js",
     "pretest": "npm run lint",
     "test": "node japaFile.js",
     "clean": "rm -rf build",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prepare": "node ./bin/prepare"
   },
   "types": "./build/adonis-typings/index.d.ts",
   "repository": {
