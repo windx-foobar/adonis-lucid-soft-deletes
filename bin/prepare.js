@@ -10,7 +10,7 @@ async function run () {
 
   await Promise.all(names.map(async (name) => {
     if (!excluded.includes(name)) {
-      await fs.promises.rm(resolveApp(name), { force: true, recursive: true });
+      await fs.promises.rm(resolveApp(name), { force: true, recursive: true })
     }
   }))
 }
