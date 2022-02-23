@@ -14,11 +14,19 @@ import { ApplicationContract } from '@ioc:Adonis/Core/Application'
  */
 export default class LucidSoftDeletesProvider {
   public static needsApplication = true
-  constructor (protected app: ApplicationContract) {}
+
+  constructor (protected app: ApplicationContract) {
+  }
 
   public register (): void {
     this.app.container.singleton('Adonis/Addons/LucidSoftDeletes', () => {
-      return require('../src/SoftDeletes')
+      const { SoftDeletes } = require('../src/SoftDeletes')
+      const decorators = require('../src/Decorators')
+
+      return {
+        SoftDeletes,
+        ...decorators,
+      }
     })
   }
 
