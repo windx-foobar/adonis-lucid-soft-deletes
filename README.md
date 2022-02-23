@@ -178,8 +178,6 @@ export default class User extends compose(BaseModel, SoftDeletes) {
       return
     }
     
-    super.boot()
-    
     this.before('delete', (model: User) => {
       // ... do something
     })
@@ -195,6 +193,8 @@ export default class User extends compose(BaseModel, SoftDeletes) {
     this.after('restore', (model: User) => {
       // ... do something
     })
+
+    super.boot()
   }
 }
 ```
