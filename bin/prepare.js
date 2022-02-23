@@ -1,15 +1,18 @@
-const fs = require('fs');
+const fs = require('fs')
+const path = require('path')
 
-async function run() {
-  const excluded = ['build', 'package.json', 'README.md'];
+async function run () {
+  const resolveApp = (...src) => path.resolve(__dirname, '..', ...src)
 
-  const names = await fs.promises.readdir(process.cwd());
+  const excluded = ['build', 'package.json', 'README.md']
+
+  const names = await fs.promises.readdir(process.cwd())
 
   await Promise.all(names.map(async (name) => {
     if (!excluded.includes(name)) {
-      await fs.promises.unlink(name);
+      await fs.promises.unlink(resolveApp(name))
     }
-  }));
+  }))
 }
 
-run();
+run()
