@@ -8,8 +8,6 @@
  */
 
 declare module '@ioc:Adonis/Lucid/Orm' {
-  import { HooksDecorator } from '@ioc:Adonis/Lucid/Orm'
-
   /**
    * Patch Lucid Model
    */
@@ -19,19 +17,16 @@ declare module '@ioc:Adonis/Lucid/Orm' {
     | string
 
   interface LucidModel {
-    before<Model extends LucidModel, Event extends SafeDeleteEventsList>(
+    before<Model extends LucidModel, Event extends SafeDeleteEventsList> (
       this: Model,
       event: Event,
       handler: SafeDeleteHooksHandler<InstanceType<Model>, Event>
     ): void;
 
-    after<Model extends LucidModel, Event extends SafeDeleteEventsList>(
+    after<Model extends LucidModel, Event extends SafeDeleteEventsList> (
       this: Model,
       event: Event,
       handler: SafeDeleteHooksHandler<InstanceType<Model>, Event>
     ): void;
   }
-
-  export const beforeRestore: HooksDecorator
-  export const afterRestore: HooksDecorator
 }
