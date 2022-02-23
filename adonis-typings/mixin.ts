@@ -11,7 +11,7 @@ declare module '@ioc:Adonis/Addons/LucidSoftDeletes' {
   import { NormalizeConstructor } from '@ioc:Adonis/Core/Helpers'
   import { LucidModel } from '@ioc:Adonis/Lucid/Orm'
   import { DateTime } from 'luxon'
-  import { ModelQueryBuilderContract } from '@ioc:Adonis/Lucid/Orm'
+  import { ModelQueryBuilderContract, HooksDecorator } from '@ioc:Adonis/Lucid/Orm'
   import { QueryClientContract } from '@ioc:Adonis/Lucid/Database'
 
   export interface SoftDeletesMixin {
@@ -41,7 +41,7 @@ declare module '@ioc:Adonis/Addons/LucidSoftDeletes' {
         this: Model
       ): ModelQueryBuilderContract<Model, Result>;
 
-      new (...args: any[]): {
+      new(...args: any[]): {
         $forceDelete: boolean
         deletedAt: DateTime | null
         readonly trashed: boolean
@@ -72,5 +72,8 @@ declare module '@ioc:Adonis/Addons/LucidSoftDeletes' {
     }
   }
   export const SoftDeletes: SoftDeletesMixin
+
+  export const beforeRestore: HooksDecorator
+  export const afterRestore: HooksDecorator
 }
 
