@@ -36,7 +36,7 @@ export function SoftDeletes<T extends NormalizeConstructor<LucidModel>> (supercl
       this.ignoreDeleted(countQuery)
     }
 
-    public static disableIgnore<Model extends typeof ModelWithSoftDeletes>(
+    public static disableIgnore<Model extends typeof ModelWithSoftDeletes> (
       query: ModelQueryBuilderContract<Model>
     ): ModelQueryBuilderContract<Model> {
       if (query['ignoreDeleted'] === false) {
@@ -49,7 +49,7 @@ export function SoftDeletes<T extends NormalizeConstructor<LucidModel>> (supercl
     /**
      * Fetch all models without filter by deleted_at
      */
-    public static withTrashed<Model extends typeof ModelWithSoftDeletes>(
+    public static withTrashed<Model extends typeof ModelWithSoftDeletes> (
       this: Model
     ): ModelQueryBuilderContract<T, InstanceType<T>> {
       return this.disableIgnore(this.query())
@@ -58,7 +58,7 @@ export function SoftDeletes<T extends NormalizeConstructor<LucidModel>> (supercl
     /**
      * Fetch models only with deleted_at
      */
-    public static onlyTrashed<Model extends typeof ModelWithSoftDeletes>(
+    public static onlyTrashed<Model extends typeof ModelWithSoftDeletes> (
       this: Model
     ): ModelQueryBuilderContract<Model, InstanceType<Model>> {
       const query = this.query()
@@ -146,5 +146,6 @@ export function SoftDeletes<T extends NormalizeConstructor<LucidModel>> (supercl
       await this.delete()
     }
   }
+
   return ModelWithSoftDeletes
 }
